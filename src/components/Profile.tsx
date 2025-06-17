@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { User, Settings, Music, Bell, Shield, HelpCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -69,7 +70,7 @@ const Profile = () => {
                 <Music className="w-5 h-5 mr-3 text-gray-600" />
                 <div>
                   <div className="font-medium">Music Integration</div>
-                  <div className="text-sm text-gray-600">Connect with Spotify/Apple Music</div>
+                  <div className="text-sm text-gray-600">Connect with music services</div>
                 </div>
               </div>
               <Switch 
@@ -92,6 +93,10 @@ const Profile = () => {
               <Button variant="outline" className="w-full justify-start">
                 <Music className="w-5 h-5 mr-2" />
                 Connect Apple Music
+              </Button>
+              <Button variant="outline" className="w-full justify-start">
+                <Music className="w-5 h-5 mr-2" />
+                Connect Amazon Music
               </Button>
             </div>
             <p className="text-sm text-gray-600 mt-3">
