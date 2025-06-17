@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,14 +24,21 @@ const Timer = () => {
   const [timeLeft, setTimeLeft] = useState(settings.activeTime);
   const [showSettings, setShowSettings] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (isActive && !isPaused) {
       intervalRef.current = setInterval(() => {
         setTimeLeft(time => {
+          // Play countdown beeps
+          if (time === 3) {
+            playCountdownBeep('short');
+          } else if (time === 2) {
+            playCountdownBeep('short');
+          } else if (time === 1) {
+            playCountdownBeep('long');
+          }
+
           if (time <= 1) {
-            playAlert();
             if (isRestPeriod) {
               if (currentRound >= settings.rounds) {
                 // Workout complete
@@ -67,6 +73,29 @@ const Timer = () => {
       }
     };
   }, [isActive, isPaused, isRestPeriod, currentRound, settings]);
+
+  const playCountdownBeep = (type: 'short' | 'long') => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Use a more harmonic, calming frequency (A4 note)
+    oscillator.frequency.value = 440;
+    oscillator.type = 'sine';
+    
+    const duration = type === 'short' ? 0.2 : 0.6;
+    const volume = 0.2; // Softer volume for calming effect
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.05);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + duration);
+  };
 
   const playAlert = () => {
     // Create a simple beep sound
